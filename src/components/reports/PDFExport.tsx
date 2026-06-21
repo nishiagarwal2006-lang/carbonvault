@@ -31,11 +31,15 @@ export const PDFExport: React.FC<PDFExportProps> = ({ reportData }) => {
       doc.setTextColor('#6B7280');
       doc.text(`Generated for: ${reportData.user.name}`, 20, 35);
       doc.text(`Email: ${reportData.user.email}`, 20, 42);
-      doc.text(`Date: ${reportData.date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      })}`, 20, 49);
+      doc.text(
+        `Date: ${reportData.date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        })}`,
+        20,
+        49
+      );
 
       // Divider
       doc.setDrawColor('#E5E7EB');
@@ -137,11 +141,7 @@ export const PDFExport: React.FC<PDFExportProps> = ({ reportData }) => {
   };
 
   return (
-    <Button
-      onClick={generatePDF}
-      disabled={loading}
-      className="min-w-[150px]"
-    >
+    <Button onClick={generatePDF} disabled={loading} className="min-w-[150px]">
       <FileDown className="w-5 h-5" />
       {loading ? 'Generating...' : 'Export PDF'}
     </Button>

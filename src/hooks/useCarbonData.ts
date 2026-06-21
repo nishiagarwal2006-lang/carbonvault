@@ -47,7 +47,7 @@ export const useCarbonData = () => {
         limit(20)
       );
       const actionsSnap = await getDocs(actionsQuery);
-      const actionsData = actionsSnap.docs.map(doc => ({
+      const actionsData = actionsSnap.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
         date: doc.data().date.toDate(),
@@ -79,13 +79,12 @@ export const useCarbonData = () => {
         limit(12)
       );
       const monthlySnap = await getDocs(monthlyQuery);
-      const monthlyData = monthlySnap.docs.map(doc => ({
+      const monthlyData = monthlySnap.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
         date: doc.data().date.toDate(),
       })) as CarbonFootprint[];
       setMonthlyData(monthlyData);
-
     } catch (error) {
       console.error('Error loading carbon data:', error);
     } finally {

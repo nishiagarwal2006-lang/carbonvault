@@ -21,7 +21,7 @@ const DashboardPage: React.FC = () => {
     return (
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
-        
+
         <div className="card text-center py-16">
           <Leaf className="w-20 h-20 text-gray-600 mx-auto mb-6" />
           <h2 className="text-2xl font-bold mb-4">Welcome to CarbonVault!</h2>
@@ -48,14 +48,12 @@ const DashboardPage: React.FC = () => {
           Refresh
         </Button>
       </div>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         <div className="lg:col-span-2">
           {latestFootprint && <CarbonScore footprint={latestFootprint} />}
         </div>
-        <div>
-          {insights && <Insights insights={insights} />}
-        </div>
+        <div>{insights && <Insights insights={insights} />}</div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">

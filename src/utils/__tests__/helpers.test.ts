@@ -4,7 +4,7 @@ import {
   getEmissionCategory,
   formatNumber,
   getMonthLabels,
-  debounce
+  debounce,
 } from '../helpers';
 
 describe('Helpers', () => {
@@ -22,7 +22,7 @@ describe('Helpers', () => {
     };
 
     const result = calculateCarbonFootprint(inputs);
-    
+
     expect(result.totalEmissions).toBeGreaterThan(0);
     expect(result.categories.energy).toBeDefined();
     expect(result.categories.travel).toBeDefined();
@@ -56,10 +56,10 @@ describe('Helpers', () => {
   test('debounce delays function execution', (done) => {
     const mockFn = jest.fn();
     const debouncedFn = debounce(mockFn, 100);
-    
+
     debouncedFn();
     debouncedFn();
-    
+
     setTimeout(() => {
       expect(mockFn).toHaveBeenCalledTimes(1);
       done();

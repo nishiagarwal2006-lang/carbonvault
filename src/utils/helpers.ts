@@ -1,5 +1,5 @@
 import { CarbonFootprint, CalculatorInputs } from '../types';
-import { EMISSION_FACTORS, NATIONAL_AVERAGE } from './constants';
+import { EMISSION_FACTORS, NATIONAL_AVERAGE, CARBON_SCORE, TIME_PERIODS } from './constants';
 
 /**
  * Calculates the total carbon footprint based on user inputs
@@ -14,20 +14,23 @@ import { EMISSION_FACTORS, NATIONAL_AVERAGE } from './constants';
  * });
  */
 export function calculateCarbonFootprint(inputs: CalculatorInputs): CarbonFootprint {
-  const energyEmissions = 
-    (inputs.electricity * EMISSION_FACTORS.energy.electricity) +
-    (inputs.gas * EMISSION_FACTORS.energy.gas) +
-    (inputs.heating * EMISSION_FACTORS.energy.heating);
+  const energyEmissions =
+    inputs.electricity * EMISSION_FACTORS.energy.electricity +
+    inputs.gas * EMISSION_FACTORS.energy.gas +
+    inputs.heating * EMISSION_FACTORS.energy.heating;
 
   const travelEmissions =
-    (inputs.carMiles * EMISSION_FACTORS.travel.car) +
-    (inputs.flights * EMISSION_FACTORS.travel.flight) +
-    (inputs.publicTransport * EMISSION_FACTORS.travel.publicTransport);
+    inputs.carMiles * EMISSION_FACTORS.travel.car +
+    inputs.flights * EMISSION_FACTORS.travel.flight +
+    inputs.publicTransport * EMISSION_FACTORS.travel.publicTransport;
 
   const dietEmissions =
-    (inputs.meatConsumption * EMISSION_FACTORS.diet.meat * 4) + // Weekly to monthly
-    (inputs.vegetarianMeals * EMISSION_FACTORS.diet.vegetarian * 4) +
-    (inputs.dairyConsumption * EMISSION_FACTORS.diet.dairy * 4);
+    (inputs.meatConsumption * EMISSION_FACTORS.diet.meat * TIME_PERIODS.WEEKS_PER_YEAR) /
+      TIME_PERIODS.MONTHS_PER_YEAR +
+    (inputs.vegetarianMeals * EMISSION_FACTORS.diet.vegetarian * TIME_PERIODS.WEEKS_PER_YEAR) /
+      TIME_PERIODS.MONTHS_PER_YEAR +
+    (inputs.dairyConsumption * EMISSION_FACTORS.diet.dairy * TIME_PERIODS.WEEKS_PER_YEAR) /
+      TIME_PERIODS.MONTHS_PER_YEAR;
 
   const totalEmissions = energyEmissions + travelEmissions + dietEmissions;
 
@@ -65,14 +68,15 @@ export function calculateCarbonFootprint(inputs: CalculatorInputs): CarbonFootpr
  * @returns Score from 0 (worst) to 100 (best)
  */
 export function getCarbonScore(totalEmissions: number): number {
-  const maxScore = 100;
-  const minEmissions = 1000; // kg CO2e per year (ideal)
-  const maxEmissions = 20000; // kg CO2e per year (high)
+  if (totalEmissions <= CARBON_SCORE.MIN_EMISSIONS) return CARBON_SCORE.MAX_SCORE;
+  if (totalEmissions >= CARBON_SCORE.MAX_EMISSIONS) return CARBON_SCORE.MIN_SCORE;
 
-  if (totalEmissions <= minEmissions) return maxScore;
-  if (totalEmissions >= maxEmissions) return 0;
+  const score =
+    CARBON_SCORE.MAX_SCORE -
+    ((totalEmissions - CARBON_SCORE.MIN_EMISSIONS) /
+      (CARBON_SCORE.MAX_EMISSIONS - CARBON_SCORE.MIN_EMISSIONS)) *
+      CARBON_SCORE.MAX_SCORE;
 
-  const score = maxScore - ((totalEmissions - minEmissions) / (maxEmissions - minEmissions)) * maxScore;
   return Math.round(score);
 }
 
@@ -82,8 +86,8 @@ export function getCarbonScore(totalEmissions: number): number {
  * @returns Emission category
  */
 export function getEmissionCategory(totalEmissions: number): 'low' | 'medium' | 'high' {
-  if (totalEmissions < 6000) return 'low';
-  if (totalEmissions < 12000) return 'medium';
+  if (totalEmissions < CARBON_SCORE.LOW_THRESHOLD) return 'low';
+  if (totalEmissions < CARBON_SCORE.MEDIUM_THRESHOLD) return 'medium';
   return 'high';
 }
 
@@ -94,7 +98,8 @@ export function getEmissionCategory(totalEmissions: number): 'low' | 'medium' | 
  */
 export function getComparisonToAverage(totalEmissions: number): string {
   const diff = ((totalEmissions - NATIONAL_AVERAGE.total) / NATIONAL_AVERAGE.total) * 100;
-  if (diff < -20) return 'You\'re doing great! Your carbon footprint is significantly below average.';
+  if (diff < -20)
+    return "You're doing great! Your carbon footprint is significantly below average.";
   if (diff < -5) return 'Good job! Your carbon footprint is below average.';
   if (diff < 5) return 'Your carbon footprint is around the national average.';
   if (diff < 20) return 'Your carbon footprint is above average. Consider reducing your emissions.';

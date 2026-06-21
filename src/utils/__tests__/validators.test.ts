@@ -1,8 +1,8 @@
-import { 
-  validateCalculatorInputs, 
-  validateEmail, 
+import {
+  validateCalculatorInputs,
+  validateEmail,
   validatePassword,
-  calculatorSchema 
+  calculatorSchema,
 } from '../validators';
 import { CalculatorInputs } from '../../types';
 
@@ -40,8 +40,8 @@ describe('Validators', () => {
 
       const errors = validateCalculatorInputs(invalidInputs);
       expect(errors.length).toBeGreaterThan(0);
-      expect(errors.some(e => e.field === 'electricity')).toBe(true);
-      expect(errors.some(e => e.field === 'gas')).toBe(true);
+      expect(errors.some((e) => e.field === 'electricity')).toBe(true);
+      expect(errors.some((e) => e.field === 'gas')).toBe(true);
     });
 
     test('returns error when total meals exceed 21', () => {
@@ -58,8 +58,8 @@ describe('Validators', () => {
       };
 
       const errors = validateCalculatorInputs(invalidInputs);
-      expect(errors.some(e => e.field === 'diet')).toBe(true);
-      expect(errors.some(e => e.message.includes('Total meals'))).toBe(true);
+      expect(errors.some((e) => e.field === 'diet')).toBe(true);
+      expect(errors.some((e) => e.message.includes('Total meals'))).toBe(true);
     });
 
     test('validates all fields with zero values', () => {
@@ -263,11 +263,11 @@ describe('Validators', () => {
       };
 
       const errors = validateCalculatorInputs(invalidInputs);
-      
+
       // Should catch both negative value and meal limit errors
       expect(errors.length).toBeGreaterThanOrEqual(2);
-      expect(errors.some(e => e.field === 'electricity')).toBe(true);
-      expect(errors.some(e => e.field === 'diet')).toBe(true);
+      expect(errors.some((e) => e.field === 'electricity')).toBe(true);
+      expect(errors.some((e) => e.field === 'diet')).toBe(true);
     });
 
     test('all validators work together', () => {
@@ -370,11 +370,11 @@ describe('Validators', () => {
       };
 
       const errors = validateCalculatorInputs(invalidInputs);
-      
-      const electricityError = errors.find(e => e.field === 'electricity');
+
+      const electricityError = errors.find((e) => e.field === 'electricity');
       expect(electricityError?.message).toContain('positive');
-      
-      const dietError = errors.find(e => e.field === 'diet');
+
+      const dietError = errors.find((e) => e.field === 'diet');
       expect(dietError?.message).toContain('Total meals');
     });
 
@@ -392,7 +392,7 @@ describe('Validators', () => {
       };
 
       const errors = validateCalculatorInputs(invalidInputs);
-      const gasError = errors.find(e => e.field === 'gas');
+      const gasError = errors.find((e) => e.field === 'gas');
       expect(gasError?.field).toBe('gas');
       expect(gasError?.message).toBeDefined();
     });

@@ -10,7 +10,7 @@ export const Footer: React.FC = () => {
             <Leaf className="w-6 h-6 text-primary-500" />
             <span className="font-bold text-lg">CarbonVault</span>
           </div>
-          
+
           <div className="flex items-center gap-6">
             <a
               href="#"

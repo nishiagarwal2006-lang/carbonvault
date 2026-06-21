@@ -4,17 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { db } from '../../lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { Button } from '../common/Button';
-import { 
-  Award, 
-  Leaf, 
-  Bike, 
-  Utensils, 
-  Bus, 
-  Trash2, 
-  Zap,
-  Plus,
-  Check
-} from 'lucide-react';
+import { Award, Leaf, Bike, Utensils, Bus, Trash2, Zap, Plus, Check } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { ACTION_POINTS, ACTION_CARBON_SAVINGS } from '../../utils/constants';
 
@@ -48,10 +38,11 @@ export const ActionTracker: React.FC<ActionTrackerProps> = ({ actions, onActionA
       const actionData: Omit<EcoAction, 'id'> = {
         userId: user.uid,
         action: selectedAction,
-        category: ACTION_TYPES.find(a => a.id === selectedAction)?.category as any || 'other',
+        category: (ACTION_TYPES.find((a) => a.id === selectedAction)?.category as any) || 'other',
         date: new Date(),
         points: ACTION_POINTS[selectedAction as keyof typeof ACTION_POINTS] || 10,
-        carbonSaved: ACTION_CARBON_SAVINGS[selectedAction as keyof typeof ACTION_CARBON_SAVINGS] || 1,
+        carbonSaved:
+          ACTION_CARBON_SAVINGS[selectedAction as keyof typeof ACTION_CARBON_SAVINGS] || 1,
         completed: true,
       };
 
@@ -71,7 +62,7 @@ export const ActionTracker: React.FC<ActionTrackerProps> = ({ actions, onActionA
     }
   };
 
-  const completedActions = actions.filter(a => a.completed);
+  const completedActions = actions.filter((a) => a.completed);
 
   return (
     <div className="card">
@@ -132,7 +123,7 @@ export const ActionTracker: React.FC<ActionTrackerProps> = ({ actions, onActionA
             </p>
           ) : (
             completedActions.slice(0, 5).map((action) => {
-              const ActionIcon = ACTION_TYPES.find(a => a.id === action.action)?.icon || Leaf;
+              const ActionIcon = ACTION_TYPES.find((a) => a.id === action.action)?.icon || Leaf;
               return (
                 <div
                   key={action.id}
@@ -144,11 +135,9 @@ export const ActionTracker: React.FC<ActionTrackerProps> = ({ actions, onActionA
                     </div>
                     <div>
                       <p className="font-medium text-sm">
-                        {ACTION_TYPES.find(a => a.id === action.action)?.label || action.action}
+                        {ACTION_TYPES.find((a) => a.id === action.action)?.label || action.action}
                       </p>
-                      <p className="text-xs text-gray-400">
-                        {action.date.toLocaleDateString()}
-                      </p>
+                      <p className="text-xs text-gray-400">{action.date.toLocaleDateString()}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">

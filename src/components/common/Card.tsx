@@ -7,9 +7,5 @@ interface CardProps {
 }
 
 export const Card: React.FC<CardProps> = ({ children, className = '', hover = false }) => {
-  return (
-    <div className={`card ${hover ? 'card-hover' : ''} ${className}`}>
-      {children}
-    </div>
-  );
+  return <div className={`card ${hover ? 'card-hover' : ''} ${className}`}>{children}</div>;
 };

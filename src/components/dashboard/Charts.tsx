@@ -38,91 +38,106 @@ export const Charts: React.FC<ChartsProps> = memo(({ monthlyData, footprint }) =
   const months = useMemo(() => getMonthLabels(12), []);
 
   // Memoize chart data to prevent unnecessary recalculations
-  const trendData = useMemo(() => ({
-    labels: months,
-    datasets: [
-      {
-        label: 'Carbon Footprint',
-        data: monthlyData.map(d => d.totalEmissions || 0).reverse(),
-        borderColor: '#10B981',
-        backgroundColor: 'rgba(16, 185, 129, 0.1)',
-        fill: true,
-        tension: 0.4,
-        pointBackgroundColor: '#10B981',
-        pointBorderColor: '#ffffff',
-        pointBorderWidth: 2,
-        pointRadius: 4,
-      },
-    ],
-  }), [monthlyData, months]);
+  const trendData = useMemo(
+    () => ({
+      labels: months,
+      datasets: [
+        {
+          label: 'Carbon Footprint',
+          data: monthlyData.map((d) => d.totalEmissions || 0).reverse(),
+          borderColor: '#10B981',
+          backgroundColor: 'rgba(16, 185, 129, 0.1)',
+          fill: true,
+          tension: 0.4,
+          pointBackgroundColor: '#10B981',
+          pointBorderColor: '#ffffff',
+          pointBorderWidth: 2,
+          pointRadius: 4,
+        },
+      ],
+    }),
+    [monthlyData, months]
+  );
 
-  const trendOptions = useMemo(() => ({
-    responsive: true,
-    plugins: {
-      legend: {
-        labels: {
-          color: '#9CA3AF',
-          font: { size: 12 },
+  const trendOptions = useMemo(
+    () => ({
+      responsive: true,
+      plugins: {
+        legend: {
+          labels: {
+            color: '#9CA3AF',
+            font: { size: 12 },
+          },
+        },
+        title: {
+          display: true,
+          text: 'Monthly Carbon Footprint Trend',
+          color: '#F3F4F6',
+          font: { size: 16, weight: 'bold' as const },
         },
       },
-      title: {
-        display: true,
-        text: 'Monthly Carbon Footprint Trend',
-        color: '#F3F4F6',
-        font: { size: 16, weight: 'bold' as const },
+      scales: {
+        y: {
+          grid: { color: 'rgba(75, 85, 99, 0.2)' },
+          ticks: { color: '#9CA3AF' },
+        },
+        x: {
+          grid: { display: false },
+          ticks: { color: '#9CA3AF' },
+        },
       },
-    },
-    scales: {
-      y: {
-        grid: { color: 'rgba(75, 85, 99, 0.2)' },
-        ticks: { color: '#9CA3AF' },
-      },
-      x: {
-        grid: { display: false },
-        ticks: { color: '#9CA3AF' },
-      },
-    },
-  }), []);
+    }),
+    []
+  );
 
   // Memoize category data
-  const categoryData = useMemo(() => footprint ? {
-    labels: ['Energy', 'Travel', 'Diet'],
-    datasets: [
-      {
-        data: [
-          footprint.categories.energy,
-          footprint.categories.travel,
-          footprint.categories.diet,
-        ],
-        backgroundColor: ['#10B981', '#34D399', '#6EE7B7'],
-        borderColor: ['#047857', '#059669', '#10B981'],
-        borderWidth: 2,
-      },
-    ],
-  } : {
-    labels: ['Energy', 'Travel', 'Diet'],
-    datasets: [{ data: [0, 0, 0], backgroundColor: ['#10B981', '#34D399', '#6EE7B7'] }],
-  }, [footprint]);
+  const categoryData = useMemo(
+    () =>
+      footprint
+        ? {
+            labels: ['Energy', 'Travel', 'Diet'],
+            datasets: [
+              {
+                data: [
+                  footprint.categories.energy,
+                  footprint.categories.travel,
+                  footprint.categories.diet,
+                ],
+                backgroundColor: ['#10B981', '#34D399', '#6EE7B7'],
+                borderColor: ['#047857', '#059669', '#10B981'],
+                borderWidth: 2,
+              },
+            ],
+          }
+        : {
+            labels: ['Energy', 'Travel', 'Diet'],
+            datasets: [{ data: [0, 0, 0], backgroundColor: ['#10B981', '#34D399', '#6EE7B7'] }],
+          },
+    [footprint]
+  );
 
-  const categoryOptions = useMemo(() => ({
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'bottom' as const,
-        labels: {
-          color: '#9CA3AF',
-          font: { size: 12 },
-          padding: 20,
+  const categoryOptions = useMemo(
+    () => ({
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'bottom' as const,
+          labels: {
+            color: '#9CA3AF',
+            font: { size: 12 },
+            padding: 20,
+          },
+        },
+        title: {
+          display: true,
+          text: 'Footprint Breakdown by Category',
+          color: '#F3F4F6',
+          font: { size: 16, weight: 'bold' as const },
         },
       },
-      title: {
-        display: true,
-        text: 'Footprint Breakdown by Category',
-        color: '#F3F4F6',
-        font: { size: 16, weight: 'bold' as const },
-      },
-    },
-  }), []);
+    }),
+    []
+  );
 
   return (
     <div className="card">

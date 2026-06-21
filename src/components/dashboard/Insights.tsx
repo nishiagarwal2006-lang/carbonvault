@@ -51,7 +51,10 @@ export const Insights: React.FC<InsightsProps> = ({ insights }) => {
               </h3>
               <ul className="space-y-2">
                 {insights.recommendations.map((recommendation, index) => (
-                  <li key={index} className="text-sm text-gray-300 bg-primary-500/10 p-3 rounded-lg border border-primary-500/20">
+                  <li
+                    key={index}
+                    className="text-sm text-gray-300 bg-primary-500/10 p-3 rounded-lg border border-primary-500/20"
+                  >
                     {recommendation}
                   </li>
                 ))}

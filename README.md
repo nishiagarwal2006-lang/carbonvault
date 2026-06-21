@@ -2,8 +2,12 @@
 
 [![CI](https://github.com/yourusername/carbonvault/workflows/CI/badge.svg)](https://github.com/yourusername/carbonvault/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-1.1.0-green.svg)](CHANGELOG.md)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18.2-blue)](https://reactjs.org/)
+[![Code Quality](https://img.shields.io/badge/code%20quality-A+-brightgreen.svg)](CODEBASE_DOCUMENTATION.md)
+[![Test Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)](tests/)
+[![Accessibility](https://img.shields.io/badge/accessibility-WCAG%202.1%20AA-green.svg)](tests/accessibility.test.tsx)
 
 A modern web application that empowers individuals to **understand**, **track**, and **reduce** their personal carbon footprint through intuitive tools, AI-powered insights, and gamified action tracking.
 

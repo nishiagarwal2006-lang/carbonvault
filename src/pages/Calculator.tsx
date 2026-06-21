@@ -5,20 +5,12 @@ import { Button } from '../components/common/Button';
 import { calculateCarbonFootprint, getCarbonScore, getEmissionCategory } from '../utils/helpers';
 import { validateCalculatorInputs } from '../utils/validators';
 import { sanitizeNumber } from '../utils/security';
+import { INPUT_BOUNDS, UI_TIMING } from '../utils/constants';
 import { CalculatorInputs, ValidationError } from '../types';
 import { db } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { toast } from 'react-toastify';
-import {
-  Zap,
-  Car,
-  Utensils,
-  TrendingUp,
-  AlertCircle,
-  Leaf,
-  Award,
-  BarChart3
-} from 'lucide-react';
+import { Zap, Car, Utensils, TrendingUp, AlertCircle, Leaf, Award, BarChart3 } from 'lucide-react';
 
 const STORAGE_KEY = 'calculator_inputs';
 const RESULTS_KEY = 'calculator_results';
@@ -38,17 +30,19 @@ const Calculator: React.FC = () => {
   const [errors, setErrors] = useState<ValidationError[]>([]);
   const [inputs, setInputs] = useState<CalculatorInputs>(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : {
-      electricity: 0,
-      gas: 0,
-      heating: 0,
-      carMiles: 0,
-      flights: 0,
-      publicTransport: 0,
-      meatConsumption: 0,
-      vegetarianMeals: 0,
-      dairyConsumption: 0,
-    };
+    return saved
+      ? JSON.parse(saved)
+      : {
+          electricity: 0,
+          gas: 0,
+          heating: 0,
+          carMiles: 0,
+          flights: 0,
+          publicTransport: 0,
+          meatConsumption: 0,
+          vegetarianMeals: 0,
+          dairyConsumption: 0,
+        };
   });
 
   // Save inputs to localStorage whenever they change
@@ -64,16 +58,16 @@ const Calculator: React.FC = () => {
   // Debounced input handler for better performance
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    
-    // Sanitize numeric input with reasonable bounds
-    const sanitized = sanitizeNumber(value, 0, 1000000);
-    const numValue = sanitized !== null ? sanitized : 0;
-    
-    setInputs(prev => ({
+
+    // Sanitize numeric input with defined bounds
+    const sanitized = sanitizeNumber(value, INPUT_BOUNDS.MIN_VALUE, INPUT_BOUNDS.MAX_VALUE);
+    const numValue = sanitized !== null ? sanitized : INPUT_BOUNDS.MIN_VALUE;
+
+    setInputs((prev) => ({
       ...prev,
-      [name]: numValue
+      [name]: numValue,
     }));
-    setErrors(prev => prev.filter(err => err.field !== name));
+    setErrors((prev) => prev.filter((err) => err.field !== name));
     setShowResults(false);
   }, []);
 
@@ -91,11 +85,11 @@ const Calculator: React.FC = () => {
     const footprint = calculateCarbonFootprint(inputs);
     const score = getCarbonScore(footprint.totalEmissions);
     const category = getEmissionCategory(footprint.totalEmissions);
-    
+
     setResults({
       ...footprint,
       score,
-      category
+      category,
     });
     setShowResults(true);
     toast.success('Carbon footprint calculated!');
@@ -104,7 +98,7 @@ const Calculator: React.FC = () => {
   // Memoized save handler
   const handleSave = useCallback(async () => {
     if (!results) return;
-    
+
     setSaving(true);
     try {
       // Save complete footprint data to Firestore
@@ -135,22 +129,22 @@ const Calculator: React.FC = () => {
         score: results.score,
         category: results.category,
       };
-      
+
       // Save to Firestore (don't wait for refresh)
       await addDoc(collection(db, 'carbonFootprints'), footprintData);
-      
+
       // Clear saved state
       localStorage.removeItem(STORAGE_KEY);
       localStorage.removeItem(RESULTS_KEY);
-      
+
       // Show success immediately
       setSaving(false);
       toast.success('Saved successfully! Redirecting to dashboard...');
-      
+
       // Navigate after short delay to show toast
       setTimeout(() => {
         navigate('/dashboard');
-      }, 800);
+      }, UI_TIMING.SAVE_DELAY);
     } catch (error) {
       console.error('Error saving:', error);
       setSaving(false);
@@ -160,25 +154,25 @@ const Calculator: React.FC = () => {
 
   const resetForm = () => {
     setInputs({
-        electricity: 0,
-        gas: 0,
-        heating: 0,
-        carMiles: 0,
-        flights: 0,
-        publicTransport: 0,
-        meatConsumption: 0,
-        vegetarianMeals: 0,
-        dairyConsumption: 0,
-      });
-      setShowResults(false);
-      setResults(null);
-      setErrors([]);
-      localStorage.removeItem(STORAGE_KEY);
-      localStorage.removeItem(RESULTS_KEY);
+      electricity: 0,
+      gas: 0,
+      heating: 0,
+      carMiles: 0,
+      flights: 0,
+      publicTransport: 0,
+      meatConsumption: 0,
+      vegetarianMeals: 0,
+      dairyConsumption: 0,
+    });
+    setShowResults(false);
+    setResults(null);
+    setErrors([]);
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(RESULTS_KEY);
   };
 
   const getFieldError = (fieldName: string) => {
-    return errors.find(err => err.field === fieldName)?.message;
+    return errors.find((err) => err.field === fieldName)?.message;
   };
 
   return (
@@ -198,10 +192,13 @@ const Calculator: React.FC = () => {
                 <Zap className="w-6 h-6 text-primary-500" />
                 <h2 className="text-xl font-semibold">Energy Consumption</h2>
               </div>
-              
+
               <div className="space-y-4">
                 <div>
-                  <label htmlFor="electricity" className="block text-sm font-medium text-gray-300 mb-1">
+                  <label
+                    htmlFor="electricity"
+                    className="block text-sm font-medium text-gray-300 mb-1"
+                  >
                     Electricity (kWh/month)
                   </label>
                   <input
@@ -262,10 +259,13 @@ const Calculator: React.FC = () => {
                 <Car className="w-6 h-6 text-primary-500" />
                 <h2 className="text-xl font-semibold">Travel</h2>
               </div>
-              
+
               <div className="space-y-4">
                 <div>
-                  <label htmlFor="carMiles" className="block text-sm font-medium text-gray-300 mb-1">
+                  <label
+                    htmlFor="carMiles"
+                    className="block text-sm font-medium text-gray-300 mb-1"
+                  >
                     Car Miles (miles/month)
                   </label>
                   <input
@@ -299,7 +299,10 @@ const Calculator: React.FC = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="publicTransport" className="block text-sm font-medium text-gray-300 mb-1">
+                  <label
+                    htmlFor="publicTransport"
+                    className="block text-sm font-medium text-gray-300 mb-1"
+                  >
                     Public Transport (miles/month)
                   </label>
                   <input
@@ -323,10 +326,13 @@ const Calculator: React.FC = () => {
                 <Utensils className="w-6 h-6 text-primary-500" />
                 <h2 className="text-xl font-semibold">Diet</h2>
               </div>
-              
+
               <div className="space-y-4">
                 <div>
-                  <label htmlFor="meatConsumption" className="block text-sm font-medium text-gray-300 mb-1">
+                  <label
+                    htmlFor="meatConsumption"
+                    className="block text-sm font-medium text-gray-300 mb-1"
+                  >
                     Meat Meals (per week)
                   </label>
                   <input
@@ -344,7 +350,10 @@ const Calculator: React.FC = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="vegetarianMeals" className="block text-sm font-medium text-gray-300 mb-1">
+                  <label
+                    htmlFor="vegetarianMeals"
+                    className="block text-sm font-medium text-gray-300 mb-1"
+                  >
                     Vegetarian Meals (per week)
                   </label>
                   <input
@@ -362,7 +371,10 @@ const Calculator: React.FC = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="dairyConsumption" className="block text-sm font-medium text-gray-300 mb-1">
+                  <label
+                    htmlFor="dairyConsumption"
+                    className="block text-sm font-medium text-gray-300 mb-1"
+                  >
                     Dairy Servings (per week)
                   </label>
                   <input
@@ -458,7 +470,8 @@ const Calculator: React.FC = () => {
                     <Leaf className="w-6 h-6 text-primary-500" />
                   </div>
                   <div className="text-4xl font-bold text-primary-500 mb-2">
-                    {results.totalEmissions.toFixed(1)} <span className="text-xl text-gray-400">kg CO₂e</span>
+                    {results.totalEmissions.toFixed(1)}{' '}
+                    <span className="text-xl text-gray-400">kg CO₂e</span>
                   </div>
                   <p className="text-sm text-gray-400">per month</p>
                 </div>
@@ -473,36 +486,48 @@ const Calculator: React.FC = () => {
                     <div>
                       <div className="flex justify-between text-sm mb-1">
                         <span className="text-gray-400">Energy</span>
-                        <span className="font-semibold">{results.categories.energy.toFixed(1)} kg</span>
+                        <span className="font-semibold">
+                          {results.categories.energy.toFixed(1)} kg
+                        </span>
                       </div>
                       <div className="w-full bg-dark-200 rounded-full h-2">
-                        <div 
+                        <div
                           className="bg-yellow-500 h-2 rounded-full transition-all duration-500"
-                          style={{ width: `${(results.categories.energy / results.totalEmissions) * 100}%` }}
+                          style={{
+                            width: `${(results.categories.energy / results.totalEmissions) * 100}%`,
+                          }}
                         />
                       </div>
                     </div>
                     <div>
                       <div className="flex justify-between text-sm mb-1">
                         <span className="text-gray-400">Travel</span>
-                        <span className="font-semibold">{results.categories.travel.toFixed(1)} kg</span>
+                        <span className="font-semibold">
+                          {results.categories.travel.toFixed(1)} kg
+                        </span>
                       </div>
                       <div className="w-full bg-dark-200 rounded-full h-2">
-                        <div 
+                        <div
                           className="bg-blue-500 h-2 rounded-full transition-all duration-500"
-                          style={{ width: `${(results.categories.travel / results.totalEmissions) * 100}%` }}
+                          style={{
+                            width: `${(results.categories.travel / results.totalEmissions) * 100}%`,
+                          }}
                         />
                       </div>
                     </div>
                     <div>
                       <div className="flex justify-between text-sm mb-1">
                         <span className="text-gray-400">Diet</span>
-                        <span className="font-semibold">{results.categories.diet.toFixed(1)} kg</span>
+                        <span className="font-semibold">
+                          {results.categories.diet.toFixed(1)} kg
+                        </span>
                       </div>
                       <div className="w-full bg-dark-200 rounded-full h-2">
-                        <div 
+                        <div
                           className="bg-green-500 h-2 rounded-full transition-all duration-500"
-                          style={{ width: `${(results.categories.diet / results.totalEmissions) * 100}%` }}
+                          style={{
+                            width: `${(results.categories.diet / results.totalEmissions) * 100}%`,
+                          }}
                         />
                       </div>
                     </div>
@@ -513,15 +538,18 @@ const Calculator: React.FC = () => {
                 <div className="card bg-primary-500/10 border-primary-500/20">
                   <h3 className="text-lg font-semibold mb-3">💡 Quick Tips</h3>
                   <ul className="space-y-2 text-sm text-gray-300">
-                    {results.categories.energy > results.categories.travel && results.categories.energy > results.categories.diet && (
-                      <li>• Consider switching to renewable energy sources</li>
-                    )}
-                    {results.categories.travel > results.categories.energy && results.categories.travel > results.categories.diet && (
-                      <li>• Try carpooling or using public transport more often</li>
-                    )}
-                    {results.categories.diet > results.categories.energy && results.categories.diet > results.categories.travel && (
-                      <li>• Reduce meat consumption and try more plant-based meals</li>
-                    )}
+                    {results.categories.energy > results.categories.travel &&
+                      results.categories.energy > results.categories.diet && (
+                        <li>• Consider switching to renewable energy sources</li>
+                      )}
+                    {results.categories.travel > results.categories.energy &&
+                      results.categories.travel > results.categories.diet && (
+                        <li>• Try carpooling or using public transport more often</li>
+                      )}
+                    {results.categories.diet > results.categories.energy &&
+                      results.categories.diet > results.categories.travel && (
+                        <li>• Reduce meat consumption and try more plant-based meals</li>
+                      )}
                     <li>• Track your progress monthly to see improvements</li>
                     <li>• Small changes add up to big impact over time</li>
                   </ul>
@@ -537,7 +565,8 @@ const Calculator: React.FC = () => {
                 <Award className="w-16 h-16 text-gray-600 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold mb-2">Ready to Calculate?</h3>
                 <p className="text-gray-400">
-                  Enter your consumption data on the left and click "Calculate Now" to see your carbon footprint instantly!
+                  Enter your consumption data on the left and click "Calculate Now" to see your
+                  carbon footprint instantly!
                 </p>
               </div>
             )}

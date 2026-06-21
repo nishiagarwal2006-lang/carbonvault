@@ -8,7 +8,7 @@ export class ReportService {
     user: { name: string; email: string }
   ): ReportData {
     const latestFootprint = footprints[0];
-    
+
     return {
       user: {
         name: user.name || 'User',
@@ -18,10 +18,12 @@ export class ReportService {
       totalEmissions: latestFootprint?.totalEmissions || 0,
       categories: latestFootprint?.categories || { energy: 0, travel: 0, diet: 0 },
       monthlyTrend: {
-        labels: footprints.map(f => f.date.toLocaleDateString('default', { month: 'short' })).reverse(),
-        data: footprints.map(f => f.totalEmissions).reverse(),
+        labels: footprints
+          .map((f) => f.date.toLocaleDateString('default', { month: 'short' }))
+          .reverse(),
+        data: footprints.map((f) => f.totalEmissions).reverse(),
       },
-      actionsCompleted: actions.filter(a => a.completed).length,
+      actionsCompleted: actions.filter((a) => a.completed).length,
       totalPoints: actions.reduce((sum, a) => sum + (a.points || 0), 0),
       insights: [],
       recommendations: [],
@@ -29,7 +31,7 @@ export class ReportService {
   }
 
   static formatReportForCSV(footprints: CarbonFootprint[]): any[] {
-    return footprints.map(footprint => ({
+    return footprints.map((footprint) => ({
       Date: footprint.date.toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'short',

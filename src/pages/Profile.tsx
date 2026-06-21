@@ -33,18 +33,24 @@ const Profile: React.FC = () => {
 
   const loadUserStats = async () => {
     if (!user) return;
-    
+
     setLoading(true);
-    
+
     try {
       // Load data in parallel
       const [footprintSnapshot, actionsSnapshot] = await Promise.all([
         getDocs(query(collection(db, 'carbonFootprints'), where('userId', '==', user.uid))),
-        getDocs(query(collection(db, 'ecoActions'), where('userId', '==', user.uid), where('completed', '==', true)))
+        getDocs(
+          query(
+            collection(db, 'ecoActions'),
+            where('userId', '==', user.uid),
+            where('completed', '==', true)
+          )
+        ),
       ]);
 
-      const footprints = footprintSnapshot.docs.map(doc => doc.data());
-      const actions = actionsSnapshot.docs.map(doc => doc.data());
+      const footprints = footprintSnapshot.docs.map((doc) => doc.data());
+      const actions = actionsSnapshot.docs.map((doc) => doc.data());
 
       // Calculate stats
       const totalPoints = actions.reduce((sum, action) => sum + (action.points || 0), 0);
@@ -90,7 +96,9 @@ const Profile: React.FC = () => {
                 <User className="w-8 h-8 text-primary-500" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold">{user?.displayName || user?.email?.split('@')[0] || 'User'}</h2>
+                <h2 className="text-2xl font-bold">
+                  {user?.displayName || user?.email?.split('@')[0] || 'User'}
+                </h2>
                 <div className="flex items-center gap-2 text-gray-400 mt-1">
                   <Mail className="w-4 h-4" />
                   <span>{user?.email}</span>
@@ -139,13 +147,15 @@ const Profile: React.FC = () => {
                 <div>
                   <div className="flex justify-between text-sm mb-1">
                     <span className="text-gray-400">Average Carbon Footprint</span>
-                    <span className="font-semibold">{stats.averageEmissions.toFixed(1)} kg CO₂e</span>
+                    <span className="font-semibold">
+                      {stats.averageEmissions.toFixed(1)} kg CO₂e
+                    </span>
                   </div>
                   <div className="w-full bg-dark-200 rounded-full h-2">
-                    <div 
+                    <div
                       className="bg-primary-500 h-2 rounded-full transition-all duration-500"
-                      style={{ 
-                        width: `${Math.min((stats.averageEmissions / 20000) * 100, 100)}%` 
+                      style={{
+                        width: `${Math.min((stats.averageEmissions / 20000) * 100, 100)}%`,
                       }}
                     />
                   </div>
@@ -156,10 +166,10 @@ const Profile: React.FC = () => {
                     <span className="font-semibold">{stats.totalActions}</span>
                   </div>
                   <div className="w-full bg-dark-200 rounded-full h-2">
-                    <div 
+                    <div
                       className="bg-primary-500 h-2 rounded-full transition-all duration-500"
-                      style={{ 
-                        width: `${Math.min((stats.totalActions / 100) * 100, 100)}%` 
+                      style={{
+                        width: `${Math.min((stats.totalActions / 100) * 100, 100)}%`,
                       }}
                     />
                   </div>
@@ -167,13 +177,15 @@ const Profile: React.FC = () => {
                 <div>
                   <div className="flex justify-between text-sm mb-1">
                     <span className="text-gray-400">Carbon Saved</span>
-                    <span className="font-semibold">{stats.totalCarbonSaved.toFixed(1)} kg CO₂e</span>
+                    <span className="font-semibold">
+                      {stats.totalCarbonSaved.toFixed(1)} kg CO₂e
+                    </span>
                   </div>
                   <div className="w-full bg-dark-200 rounded-full h-2">
-                    <div 
+                    <div
                       className="bg-primary-500 h-2 rounded-full transition-all duration-500"
-                      style={{ 
-                        width: `${Math.min((stats.totalCarbonSaved / 1000) * 100, 100)}%` 
+                      style={{
+                        width: `${Math.min((stats.totalCarbonSaved / 1000) * 100, 100)}%`,
                       }}
                     />
                   </div>
@@ -199,11 +211,7 @@ const Profile: React.FC = () => {
 
         {/* Logout Section */}
         <div className="flex gap-4">
-          <Button 
-            variant="secondary" 
-            onClick={handleLogout}
-            className="w-full md:w-auto"
-          >
+          <Button variant="secondary" onClick={handleLogout} className="w-full md:w-auto">
             Logout
           </Button>
         </div>

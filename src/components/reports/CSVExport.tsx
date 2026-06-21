@@ -62,11 +62,7 @@ export const CSVExport: React.FC<CSVExportProps> = ({ footprints }) => {
   };
 
   return (
-    <Button
-      onClick={exportCSV}
-      variant="secondary"
-      className="min-w-[150px]"
-    >
+    <Button onClick={exportCSV} variant="secondary" className="min-w-[150px]">
       <Download className="w-5 h-5" />
       Export CSV
     </Button>

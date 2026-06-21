@@ -20,7 +20,8 @@ const Home: React.FC = () => {
               Track, Understand, Reduce
             </h1>
             <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl mx-auto">
-              Take control of your carbon footprint with personalized insights, actionable recommendations, and gamified tracking.
+              Take control of your carbon footprint with personalized insights, actionable
+              recommendations, and gamified tracking.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               {user ? (
@@ -44,9 +45,7 @@ const Home: React.FC = () => {
 
       <section className="py-16 md:py-24 bg-dark-100/50">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-            Why CarbonVault?
-          </h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Why CarbonVault?</h2>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="card card-hover text-center">
               <div className="w-16 h-16 bg-primary-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -54,7 +53,8 @@ const Home: React.FC = () => {
               </div>
               <h3 className="text-xl font-semibold mb-2">Track Progress</h3>
               <p className="text-gray-300">
-                Monitor your carbon footprint over time with interactive charts and real-time feedback.
+                Monitor your carbon footprint over time with interactive charts and real-time
+                feedback.
               </p>
             </div>
             <div className="card card-hover text-center">
@@ -63,7 +63,8 @@ const Home: React.FC = () => {
               </div>
               <h3 className="text-xl font-semibold mb-2">Gamified Actions</h3>
               <p className="text-gray-300">
-                Earn points and badges for completing eco-friendly actions and reducing your footprint.
+                Earn points and badges for completing eco-friendly actions and reducing your
+                footprint.
               </p>
             </div>
             <div className="card card-hover text-center">
@@ -72,7 +73,8 @@ const Home: React.FC = () => {
               </div>
               <h3 className="text-xl font-semibold mb-2">Data-Driven Insights</h3>
               <p className="text-gray-300">
-                Get personalized recommendations powered by AI to help you reduce your environmental impact.
+                Get personalized recommendations powered by AI to help you reduce your environmental
+                impact.
               </p>
             </div>
           </div>

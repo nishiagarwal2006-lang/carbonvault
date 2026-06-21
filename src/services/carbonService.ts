@@ -1,5 +1,15 @@
 import { db } from '../lib/firebase';
-import { collection, addDoc, query, where, getDocs, orderBy, limit, deleteDoc, doc } from 'firebase/firestore';
+import {
+  collection,
+  addDoc,
+  query,
+  where,
+  getDocs,
+  orderBy,
+  limit,
+  deleteDoc,
+  doc,
+} from 'firebase/firestore';
 import { CarbonFootprint, EcoAction, CalculatorInputs } from '../types';
 import { calculateCarbonFootprint } from '../utils/helpers';
 
@@ -23,7 +33,7 @@ export class CarbonService {
     );
     const snapshot = await getDocs(q);
     if (snapshot.empty) return null;
-    
+
     const data = snapshot.docs[0].data();
     return {
       id: snapshot.docs[0].id,
@@ -40,14 +50,17 @@ export class CarbonService {
       limit(limitCount)
     );
     const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({
+    return snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
       date: doc.data().date.toDate(),
     })) as CarbonFootprint[];
   }
 
-  static async saveAction(userId: string, action: Omit<EcoAction, 'id' | 'userId'>): Promise<string> {
+  static async saveAction(
+    userId: string,
+    action: Omit<EcoAction, 'id' | 'userId'>
+  ): Promise<string> {
     const docRef = await addDoc(collection(db, 'ecoActions'), {
       ...action,
       userId,
@@ -63,7 +76,7 @@ export class CarbonService {
       orderBy('date', 'desc')
     );
     const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({
+    return snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
       date: doc.data().date.toDate(),

@@ -28,7 +28,7 @@ export function escapeHTML(str: string): string {
     "'": '&#x27;',
     '/': '&#x2F;',
   };
-  
+
   return str.replace(/[&<>"'/]/g, (char) => htmlEscapeMap[char]);
 }
 
@@ -40,16 +40,16 @@ export function escapeHTML(str: string): string {
 export function sanitizeEmail(email: string): string | null {
   const trimmed = email.trim().toLowerCase();
   const emailRegex = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
-  
+
   if (!emailRegex.test(trimmed)) {
     return null;
   }
-  
+
   // Additional check for common malicious patterns
   if (trimmed.includes('..') || trimmed.startsWith('.') || trimmed.endsWith('.')) {
     return null;
   }
-  
+
   return trimmed;
 }
 
@@ -66,15 +66,15 @@ export function sanitizeNumber(
   max: number = Infinity
 ): number | null {
   const num = Number(value);
-  
+
   if (isNaN(num) || !isFinite(num)) {
     return null;
   }
-  
+
   if (num < min || num > max) {
     return null;
   }
-  
+
   return num;
 }
 
@@ -88,18 +88,18 @@ export function sanitizeString(str: string, maxLength: number = 1000): string {
   if (typeof str !== 'string') {
     return '';
   }
-  
+
   // Remove null bytes and control characters
   let sanitized = str.replace(/[\x00-\x1F\x7F]/g, '');
-  
+
   // Trim whitespace
   sanitized = sanitized.trim();
-  
+
   // Limit length
   if (sanitized.length > maxLength) {
     sanitized = sanitized.substring(0, maxLength);
   }
-  
+
   return sanitized;
 }
 
@@ -110,7 +110,7 @@ export class RateLimiter {
   private requests: Map<string, number[]> = new Map();
   private limit: number;
   private window: number;
-  
+
   /**
    * Creates a rate limiter
    * @param limit - Maximum number of requests allowed
@@ -120,7 +120,7 @@ export class RateLimiter {
     this.limit = limit;
     this.window = window;
   }
-  
+
   /**
    * Checks if a request is allowed
    * @param key - Unique identifier for the requester
@@ -129,22 +129,20 @@ export class RateLimiter {
   isAllowed(key: string): boolean {
     const now = Date.now();
     const timestamps = this.requests.get(key) || [];
-    
+
     // Remove old timestamps outside the window
-    const validTimestamps = timestamps.filter(
-      (timestamp) => now - timestamp < this.window
-    );
-    
+    const validTimestamps = timestamps.filter((timestamp) => now - timestamp < this.window);
+
     if (validTimestamps.length >= this.limit) {
       return false;
     }
-    
+
     validTimestamps.push(now);
     this.requests.set(key, validTimestamps);
-    
+
     return true;
   }
-  
+
   /**
    * Resets the rate limiter for a specific key
    * @param key - Unique identifier to reset
@@ -152,7 +150,7 @@ export class RateLimiter {
   reset(key: string): void {
     this.requests.delete(key);
   }
-  
+
   /**
    * Clears all rate limit data
    */
@@ -170,19 +168,19 @@ export class RateLimiter {
 export function isValidURL(url: string, allowedDomains?: string[]): boolean {
   try {
     const parsed = new URL(url);
-    
+
     // Only allow http and https protocols
     if (!['http:', 'https:'].includes(parsed.protocol)) {
       return false;
     }
-    
+
     // Check against allowed domains if provided
     if (allowedDomains && allowedDomains.length > 0) {
-      return allowedDomains.some((domain) => 
-        parsed.hostname === domain || parsed.hostname.endsWith(`.${domain}`)
+      return allowedDomains.some(
+        (domain) => parsed.hostname === domain || parsed.hostname.endsWith(`.${domain}`)
       );
     }
-    
+
     return true;
   } catch {
     return false;
@@ -207,29 +205,25 @@ export function generateSecureToken(length: number = 32): string {
  * @param maxSize - Maximum file size in bytes
  * @returns True if file is valid, false otherwise
  */
-export function validateFileUpload(
-  file: File,
-  allowedTypes: string[],
-  maxSize: number
-): boolean {
+export function validateFileUpload(file: File, allowedTypes: string[], maxSize: number): boolean {
   // Check file size
   if (file.size > maxSize) {
     return false;
   }
-  
+
   // Check MIME type
   if (!allowedTypes.includes(file.type)) {
     return false;
   }
-  
+
   // Check file extension
   const extension = file.name.split('.').pop()?.toLowerCase();
   const allowedExtensions = allowedTypes.map((type) => type.split('/')[1]);
-  
+
   if (!extension || !allowedExtensions.includes(extension)) {
     return false;
   }
-  
+
   return true;
 }
 

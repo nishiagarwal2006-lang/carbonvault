@@ -26,12 +26,13 @@ const Reports: React.FC = () => {
     return (
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-8">Reports</h1>
-        
+
         <div className="card text-center py-16">
           <FileText className="w-20 h-20 text-gray-600 mx-auto mb-6" />
           <h2 className="text-2xl font-bold mb-4">No Data Yet</h2>
           <p className="text-gray-400 mb-8 max-w-md mx-auto">
-            Start calculating your carbon footprint to generate reports and track your progress over time.
+            Start calculating your carbon footprint to generate reports and track your progress over
+            time.
           </p>
           <Link to="/calculator">
             <button className="inline-flex items-center gap-2 px-6 py-3 bg-primary-500 hover:bg-primary-600 rounded-lg font-semibold transition-colors">
@@ -50,9 +51,7 @@ const Reports: React.FC = () => {
         <div className="flex justify-between items-start mb-8">
           <div>
             <h1 className="text-3xl font-bold mb-2">Reports</h1>
-            <p className="text-gray-400">
-              Export and analyze your carbon footprint data
-            </p>
+            <p className="text-gray-400">Export and analyze your carbon footprint data</p>
           </div>
           <Button onClick={refreshData} variant="secondary" disabled={loading}>
             <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
@@ -88,26 +87,33 @@ const Reports: React.FC = () => {
           <p className="text-gray-400 mb-6">
             Download your carbon footprint data in different formats for analysis or record-keeping.
           </p>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <PDFExport reportData={{
-              user: { name: user?.displayName || user?.email?.split('@')[0] || 'User', email: user?.email || '' },
-              date: new Date(),
-              totalEmissions,
-              categories: {
-                energy: footprints.reduce((sum, f) => sum + (f.categories?.energy || 0), 0),
-                travel: footprints.reduce((sum, f) => sum + (f.categories?.travel || 0), 0),
-                diet: footprints.reduce((sum, f) => sum + (f.categories?.diet || 0), 0),
-              },
-              actionsCompleted: actions.length,
-              totalPoints: actions.reduce((sum, a) => sum + (a.points || 0), 0),
-              insights: [],
-              recommendations: [],
-              monthlyTrend: {
-                labels: footprints.map(f => f.date.toLocaleDateString('en-US', { month: 'short' })),
-                data: footprints.map(f => f.totalEmissions || 0),
-              },
-            }} />
+            <PDFExport
+              reportData={{
+                user: {
+                  name: user?.displayName || user?.email?.split('@')[0] || 'User',
+                  email: user?.email || '',
+                },
+                date: new Date(),
+                totalEmissions,
+                categories: {
+                  energy: footprints.reduce((sum, f) => sum + (f.categories?.energy || 0), 0),
+                  travel: footprints.reduce((sum, f) => sum + (f.categories?.travel || 0), 0),
+                  diet: footprints.reduce((sum, f) => sum + (f.categories?.diet || 0), 0),
+                },
+                actionsCompleted: actions.length,
+                totalPoints: actions.reduce((sum, a) => sum + (a.points || 0), 0),
+                insights: [],
+                recommendations: [],
+                monthlyTrend: {
+                  labels: footprints.map((f) =>
+                    f.date.toLocaleDateString('en-US', { month: 'short' })
+                  ),
+                  data: footprints.map((f) => f.totalEmissions || 0),
+                },
+              }}
+            />
             <CSVExport footprints={footprints} />
           </div>
         </div>
@@ -128,10 +134,11 @@ const Reports: React.FC = () => {
               </thead>
               <tbody>
                 {footprints.slice(0, 10).map((footprint, index) => (
-                  <tr key={index} className="border-b border-dark-200/50 hover:bg-dark-100/50 transition-colors">
-                    <td className="py-3 px-4 text-sm">
-                      {footprint.date.toLocaleDateString()}
-                    </td>
+                  <tr
+                    key={index}
+                    className="border-b border-dark-200/50 hover:bg-dark-100/50 transition-colors"
+                  >
+                    <td className="py-3 px-4 text-sm">{footprint.date.toLocaleDateString()}</td>
                     <td className="py-3 px-4 text-sm text-right">
                       {footprint.categories?.energy?.toFixed(1) || '0.0'} kg
                     </td>

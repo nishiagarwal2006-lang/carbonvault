@@ -18,7 +18,7 @@ import {
   Target,
   Zap,
   Car,
-  Utensils
+  Utensils,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { formatNumber, getCarbonScore, getEmissionCategory } from '../../utils/helpers';
@@ -30,15 +30,8 @@ interface DashboardProps {
 
 export const Dashboard: React.FC<DashboardProps> = memo(({ onActionAdded }) => {
   const { user } = useAuth();
-  const {
-    loading,
-    footprint,
-    actions,
-    insights,
-    monthlyData,
-    refetch
-  } = useCarbonData();
-  
+  const { loading, footprint, actions, insights, monthlyData, refetch } = useCarbonData();
+
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'year'>('month');
   const [showAllActions, setShowAllActions] = useState(false);
 
@@ -46,28 +39,36 @@ export const Dashboard: React.FC<DashboardProps> = memo(({ onActionAdded }) => {
   const stats = useMemo(() => {
     const totalPoints = actions.reduce((sum, action) => sum + (action.points || 0), 0);
     const totalCarbonSaved = actions.reduce((sum, action) => sum + (action.carbonSaved || 0), 0);
-    const completedActions = actions.filter(a => a.completed).length;
+    const completedActions = actions.filter((a) => a.completed).length;
     const carbonScore = footprint ? getCarbonScore(footprint.totalEmissions) : 0;
     const emissionCategory = footprint ? getEmissionCategory(footprint.totalEmissions) : 'medium';
-    
+
     return { totalPoints, totalCarbonSaved, completedActions, carbonScore, emissionCategory };
   }, [actions, footprint]);
 
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case 'low': return 'text-primary-500';
-      case 'medium': return 'text-yellow-500';
-      case 'high': return 'text-red-500';
-      default: return 'text-gray-400';
+      case 'low':
+        return 'text-primary-500';
+      case 'medium':
+        return 'text-yellow-500';
+      case 'high':
+        return 'text-red-500';
+      default:
+        return 'text-gray-400';
     }
   };
 
   const getCategoryLabel = (category: string) => {
     switch (category) {
-      case 'low': return 'Low Impact';
-      case 'medium': return 'Medium Impact';
-      case 'high': return 'High Impact';
-      default: return 'Unknown';
+      case 'low':
+        return 'Low Impact';
+      case 'medium':
+        return 'Medium Impact';
+      case 'high':
+        return 'High Impact';
+      default:
+        return 'Unknown';
     }
   };
 
@@ -95,9 +96,10 @@ export const Dashboard: React.FC<DashboardProps> = memo(({ onActionAdded }) => {
             Welcome back, {user?.displayName || user?.email?.split('@')[0] || 'User'}! 👋
           </h1>
           <p className="text-gray-400 mt-1">
-            Here's your carbon footprint overview for {new Date().toLocaleDateString('en-US', { 
-              month: 'long', 
-              year: 'numeric' 
+            Here's your carbon footprint overview for{' '}
+            {new Date().toLocaleDateString('en-US', {
+              month: 'long',
+              year: 'numeric',
             })}
           </p>
         </div>
@@ -141,7 +143,7 @@ export const Dashboard: React.FC<DashboardProps> = memo(({ onActionAdded }) => {
               <div
                 className="bg-primary-500 h-1.5 rounded-full transition-all duration-500"
                 style={{
-                  width: `${Math.min((footprint.totalEmissions / 20000) * 100, 100)}%`
+                  width: `${Math.min((footprint.totalEmissions / 20000) * 100, 100)}%`,
                 }}
               />
             </div>
@@ -155,9 +157,7 @@ export const Dashboard: React.FC<DashboardProps> = memo(({ onActionAdded }) => {
           </div>
           <div className="text-3xl font-bold text-white">{stats.completedActions}</div>
           <div className="text-sm text-gray-400">Total Actions</div>
-          <div className="mt-2 text-sm text-primary-400">
-            +{stats.totalPoints} points earned
-          </div>
+          <div className="mt-2 text-sm text-primary-400">+{stats.totalPoints} points earned</div>
         </Card>
 
         <Card className="text-center">
@@ -165,13 +165,9 @@ export const Dashboard: React.FC<DashboardProps> = memo(({ onActionAdded }) => {
             <span className="text-sm text-gray-400">Carbon Saved</span>
             <Leaf className="w-5 h-5 text-primary-500" />
           </div>
-          <div className="text-3xl font-bold text-white">
-            {stats.totalCarbonSaved.toFixed(1)}
-          </div>
+          <div className="text-3xl font-bold text-white">{stats.totalCarbonSaved.toFixed(1)}</div>
           <div className="text-sm text-gray-400">kg CO₂e saved</div>
-          <div className="mt-2 text-sm text-primary-400">
-            🌱 Making a difference!
-          </div>
+          <div className="mt-2 text-sm text-primary-400">🌱 Making a difference!</div>
         </Card>
       </div>
 
@@ -180,7 +176,7 @@ export const Dashboard: React.FC<DashboardProps> = memo(({ onActionAdded }) => {
         {/* Left Column - Carbon Score and Charts */}
         <div className="lg:col-span-2 space-y-6">
           {footprint && <CarbonScore footprint={footprint} />}
-          
+
           {/* Period Selector */}
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold">Trend Analysis</h3>
@@ -208,19 +204,21 @@ export const Dashboard: React.FC<DashboardProps> = memo(({ onActionAdded }) => {
         {/* Right Column - Insights and Actions */}
         <div className="space-y-6">
           {insights && <Insights insights={insights} />}
-          
-          <ActionTracker 
-            actions={actions.slice(0, showAllActions ? undefined : 5)} 
+
+          <ActionTracker
+            actions={actions.slice(0, showAllActions ? undefined : 5)}
             onActionAdded={handleActionAdded}
           />
-          
+
           {actions.length > 5 && (
             <button
               onClick={() => setShowAllActions(!showAllActions)}
               className="flex items-center justify-center gap-2 w-full py-2 text-sm text-primary-400 hover:text-primary-300 transition-colors"
             >
               {showAllActions ? 'Show Less' : `View All ${actions.length} Actions`}
-              <ChevronRight className={`w-4 h-4 transition-transform ${showAllActions ? 'rotate-90' : ''}`} />
+              <ChevronRight
+                className={`w-4 h-4 transition-transform ${showAllActions ? 'rotate-90' : ''}`}
+              />
             </button>
           )}
         </div>
@@ -239,10 +237,10 @@ export const Dashboard: React.FC<DashboardProps> = memo(({ onActionAdded }) => {
               <div className="text-2xl font-bold">{formatNumber(footprint.categories.energy)}</div>
               <div className="text-sm text-gray-400">kg CO₂e</div>
               <div className="mt-2 w-full bg-dark-100 rounded-full h-1.5">
-                <div 
+                <div
                   className="bg-primary-500 h-1.5 rounded-full transition-all duration-500"
-                  style={{ 
-                    width: `${Math.min((footprint.categories.energy / footprint.totalEmissions) * 100, 100)}%` 
+                  style={{
+                    width: `${Math.min((footprint.categories.energy / footprint.totalEmissions) * 100, 100)}%`,
                   }}
                 />
               </div>
@@ -256,10 +254,10 @@ export const Dashboard: React.FC<DashboardProps> = memo(({ onActionAdded }) => {
               <div className="text-2xl font-bold">{formatNumber(footprint.categories.travel)}</div>
               <div className="text-sm text-gray-400">kg CO₂e</div>
               <div className="mt-2 w-full bg-dark-100 rounded-full h-1.5">
-                <div 
+                <div
                   className="bg-primary-500 h-1.5 rounded-full transition-all duration-500"
-                  style={{ 
-                    width: `${Math.min((footprint.categories.travel / footprint.totalEmissions) * 100, 100)}%` 
+                  style={{
+                    width: `${Math.min((footprint.categories.travel / footprint.totalEmissions) * 100, 100)}%`,
                   }}
                 />
               </div>
@@ -273,10 +271,10 @@ export const Dashboard: React.FC<DashboardProps> = memo(({ onActionAdded }) => {
               <div className="text-2xl font-bold">{formatNumber(footprint.categories.diet)}</div>
               <div className="text-sm text-gray-400">kg CO₂e</div>
               <div className="mt-2 w-full bg-dark-100 rounded-full h-1.5">
-                <div 
+                <div
                   className="bg-primary-500 h-1.5 rounded-full transition-all duration-500"
-                  style={{ 
-                    width: `${Math.min((footprint.categories.diet / footprint.totalEmissions) * 100, 100)}%` 
+                  style={{
+                    width: `${Math.min((footprint.categories.diet / footprint.totalEmissions) * 100, 100)}%`,
                   }}
                 />
               </div>

@@ -64,7 +64,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (err: any) {
       let errorMessage = 'Failed to login. Please check your credentials.';
-      
+
       // Handle specific Firebase error codes
       if (err.code === 'auth/user-not-found') {
         errorMessage = 'No account found with this email. Please sign up first.';
@@ -79,7 +79,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       } else if (err.code === 'auth/network-request-failed') {
         errorMessage = 'Network error. Please check your internet connection.';
       }
-      
+
       setError(errorMessage);
       throw new Error(errorMessage);
     }
@@ -91,7 +91,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       await createUserWithEmailAndPassword(auth, email, password);
     } catch (err: any) {
       let errorMessage = 'Failed to register. Please try again.';
-      
+
       // Handle specific Firebase error codes
       if (err.code === 'auth/email-already-in-use') {
         errorMessage = 'This email is already registered. Please sign in instead.';
@@ -104,7 +104,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       } else if (err.code === 'auth/network-request-failed') {
         errorMessage = 'Network error. Please check your internet connection.';
       }
-      
+
       setError(errorMessage);
       throw new Error(errorMessage);
     }

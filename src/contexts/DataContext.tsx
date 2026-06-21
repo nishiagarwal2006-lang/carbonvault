@@ -27,19 +27,40 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const refreshData = useCallback(async () => {
     if (!user) return;
-    
+
     setLoading(true);
-    
+
     try {
       // Load all data in parallel
       const [footprintSnapshot, actionsSnapshot, insightsSnapshot] = await Promise.all([
-        getDocs(query(collection(db, 'carbonFootprints'), where('userId', '==', user.uid), orderBy('date', 'desc'), limit(12))),
-        getDocs(query(collection(db, 'ecoActions'), where('userId', '==', user.uid), orderBy('date', 'desc'), limit(10))),
-        getDocs(query(collection(db, 'carbonInsights'), where('userId', '==', user.uid), orderBy('date', 'desc'), limit(1)))
+        getDocs(
+          query(
+            collection(db, 'carbonFootprints'),
+            where('userId', '==', user.uid),
+            orderBy('date', 'desc'),
+            limit(12)
+          )
+        ),
+        getDocs(
+          query(
+            collection(db, 'ecoActions'),
+            where('userId', '==', user.uid),
+            orderBy('date', 'desc'),
+            limit(10)
+          )
+        ),
+        getDocs(
+          query(
+            collection(db, 'carbonInsights'),
+            where('userId', '==', user.uid),
+            orderBy('date', 'desc'),
+            limit(1)
+          )
+        ),
       ]);
 
       // Process footprints
-      const footprintsData = footprintSnapshot.docs.map(doc => ({
+      const footprintsData = footprintSnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
         date: doc.data().date?.toDate() || new Date(),
@@ -48,7 +69,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLatestFootprint(footprintsData[0] || null);
 
       // Process actions
-      const actionsData = actionsSnapshot.docs.map(doc => ({
+      const actionsData = actionsSnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
         date: doc.data().date?.toDate() || new Date(),
@@ -81,15 +102,17 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [user, lastRefresh, refreshData]);
 
   return (
-    <DataContext.Provider value={{
-      footprints,
-      latestFootprint,
-      actions,
-      insights,
-      loading,
-      refreshData,
-      lastRefresh,
-    }}>
+    <DataContext.Provider
+      value={{
+        footprints,
+        latestFootprint,
+        actions,
+        insights,
+        loading,
+        refreshData,
+        lastRefresh,
+      }}
+    >
       {children}
     </DataContext.Provider>
   );

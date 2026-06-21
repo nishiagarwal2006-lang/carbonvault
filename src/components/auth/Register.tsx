@@ -117,7 +117,10 @@ const Register: React.FC = () => {
           </div>
 
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300 mb-1">
+            <label
+              htmlFor="confirmPassword"
+              className="block text-sm font-medium text-gray-300 mb-1"
+            >
               Confirm Password
             </label>
             <div className="relative">

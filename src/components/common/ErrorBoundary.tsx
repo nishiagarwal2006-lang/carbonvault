@@ -28,17 +28,11 @@ export class ErrorBoundary extends Component<Props, State> {
       return (
         <div className="min-h-screen flex items-center justify-center bg-dark-200 p-4">
           <div className="card max-w-md w-full text-center">
-            <h2 className="text-2xl font-bold text-red-500 mb-4">
-              Something went wrong
-            </h2>
+            <h2 className="text-2xl font-bold text-red-500 mb-4">Something went wrong</h2>
             <p className="text-gray-300 mb-6">
               We're sorry, but an error occurred. Please try refreshing the page.
             </p>
-            <button
-              onClick={() => window.location.reload()}
-              className="btn-primary"
-              type="button"
-            >
+            <button onClick={() => window.location.reload()} className="btn-primary" type="button">
               Refresh Page
             </button>
           </div>

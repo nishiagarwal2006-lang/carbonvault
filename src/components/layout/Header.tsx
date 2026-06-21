@@ -3,19 +3,19 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { Button } from '../common/Button';
-import { 
-  Leaf, 
-  Menu, 
-  X, 
-  User, 
-  LogOut, 
-  Sun, 
+import {
+  Leaf,
+  Menu,
+  X,
+  User,
+  LogOut,
+  Sun,
   Moon,
   Contrast,
   LayoutDashboard,
   Calculator,
   BarChart3,
-  FileText
+  FileText,
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 
@@ -49,15 +49,17 @@ export const Header: React.FC = () => {
     }
   };
 
-  const navItems = user ? [
-    { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/calculator', label: 'Calculator', icon: Calculator },
-    { to: '/reports', label: 'Reports', icon: FileText },
-    { to: '/profile', label: 'Profile', icon: User },
-  ] : [];
+  const navItems = user
+    ? [
+        { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+        { to: '/calculator', label: 'Calculator', icon: Calculator },
+        { to: '/reports', label: 'Reports', icon: FileText },
+        { to: '/profile', label: 'Profile', icon: User },
+      ]
+    : [];
 
   return (
-    <header 
+    <header
       className={`sticky top-0 z-50 transition-all duration-300 ${
         isScrolled ? 'bg-dark-200/95 backdrop-blur-md border-b border-gray-800' : 'bg-dark-200'
       }`}
@@ -66,8 +68,8 @@ export const Header: React.FC = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link 
-            to="/" 
+          <Link
+            to="/"
             className="flex items-center gap-2 text-xl font-bold text-primary-500 hover:text-primary-400 transition-colors"
             aria-label="CarbonVault Home"
           >
