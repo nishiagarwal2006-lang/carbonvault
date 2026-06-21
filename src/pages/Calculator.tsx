@@ -25,7 +25,6 @@ const RESULTS_KEY = 'calculator_results';
 
 const Calculator: React.FC = () => {
   const { user } = useAuth();
-  const { refreshData } = useData();
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
   const [showResults, setShowResults] = useState(() => {

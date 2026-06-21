@@ -69,7 +69,7 @@ export const Charts: React.FC<ChartsProps> = ({ monthlyData, footprint }) => {
         display: true,
         text: 'Monthly Carbon Footprint Trend',
         color: '#F3F4F6',
-        font: { size: 16, weight: 'bold' },
+        font: { size: 16, weight: 'bold' as const },
       },
     },
     scales: {
@@ -119,7 +119,7 @@ export const Charts: React.FC<ChartsProps> = ({ monthlyData, footprint }) => {
         display: true,
         text: 'Footprint Breakdown by Category',
         color: '#F3F4F6',
-        font: { size: 16, weight: 'bold' },
+        font: { size: 16, weight: 'bold' as const },
       },
     },
   };
