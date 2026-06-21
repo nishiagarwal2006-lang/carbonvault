@@ -4,6 +4,7 @@ import { axe, toHaveNoViolations } from 'jest-axe';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from '../src/contexts/AuthContext';
 import { ThemeProvider } from '../src/contexts/ThemeContext';
+import { DataProvider } from '../src/contexts/DataContext';
 import Home from '../src/pages/Home';
 import Login from '../src/components/auth/Login';
 import Calculator from '../src/pages/Calculator';
@@ -29,7 +30,9 @@ describe('Accessibility Tests', () => {
       <BrowserRouter>
         <ThemeProvider>
           <AuthProvider>
-            {component}
+            <DataProvider>
+              {component}
+            </DataProvider>
           </AuthProvider>
         </ThemeProvider>
       </BrowserRouter>

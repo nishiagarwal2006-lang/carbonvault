@@ -23,8 +23,23 @@ const Register: React.FC = () => {
       return;
     }
 
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters (Firebase requirement)');
+      return;
+    }
+
     if (password.length < 8) {
-      setError('Password must be at least 8 characters');
+      setError('Password should be at least 8 characters for better security');
+      return;
+    }
+
+    // Check for password strength
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+
+    if (!hasUpperCase || !hasLowerCase || !hasNumber) {
+      setError('Password must contain uppercase, lowercase, and number');
       return;
     }
 
@@ -34,9 +49,10 @@ const Register: React.FC = () => {
       await register(email, password);
       toast.success('Account created successfully!');
       navigate('/dashboard');
-    } catch (err) {
-      setError('Registration failed. Please try again.');
-      toast.error('Registration failed');
+    } catch (err: any) {
+      const errorMessage = err.message || 'Registration failed. Please try again.';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

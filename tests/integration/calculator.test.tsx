@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 import Calculator from '../../src/pages/Calculator';
 import { AuthProvider } from '../../src/contexts/AuthContext';
 import { ThemeProvider } from '../../src/contexts/ThemeContext';
+import { DataProvider } from '../../src/contexts/DataContext';
 
 // Mock Firebase
 jest.mock('../../src/lib/firebase', () => ({
@@ -20,7 +21,9 @@ describe('Calculator Integration Tests', () => {
       <BrowserRouter>
         <ThemeProvider>
           <AuthProvider>
-            <Calculator />
+            <DataProvider>
+              <Calculator />
+            </DataProvider>
           </AuthProvider>
         </ThemeProvider>
       </BrowserRouter>
@@ -43,13 +46,14 @@ describe('Calculator Integration Tests', () => {
     expect(electricityInput).toHaveValue(500);
   });
 
-  test('validates form submission', async () => {
+  test('calculates carbon footprint', async () => {
     renderCalculator();
-    const submitButton = screen.getByText('Calculate Footprint');
+    const submitButton = screen.getByText('Calculate Now');
     fireEvent.click(submitButton);
     
+    // After clicking calculate with default values, results should appear
     await waitFor(() => {
-      expect(screen.getByText(/Please fix the following errors/i)).toBeInTheDocument();
+      expect(screen.getByText('Your Carbon Score')).toBeInTheDocument();
     });
   });
 });

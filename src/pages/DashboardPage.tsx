@@ -1,113 +1,57 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import React, { useEffect } from 'react';
+import { useData } from '../contexts/DataContext';
 import { CarbonScore } from '../components/dashboard/CarbonScore';
 import { Charts } from '../components/dashboard/Charts';
 import { ActionTracker } from '../components/dashboard/ActionTracker';
 import { Insights } from '../components/dashboard/Insights';
-import { LoadingSpinner } from '../components/common/LoadingSpinner';
-import { db } from '../lib/firebase';
-import { collection, query, where, getDocs, orderBy, limit } from 'firebase/firestore';
-import { CarbonFootprint, EcoAction, CarbonInsight } from '../types';
+import { Leaf, TrendingUp, RefreshCw } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Button } from '../components/common/Button';
 
 const DashboardPage: React.FC = () => {
-  const { user } = useAuth();
-  const [loading, setLoading] = useState(true);
-  const [footprint, setFootprint] = useState<CarbonFootprint | null>(null);
-  const [actions, setActions] = useState<EcoAction[]>([]);
-  const [insights, setInsights] = useState<CarbonInsight | null>(null);
-  const [monthlyData, setMonthlyData] = useState<any[]>([]);
+  const { latestFootprint, footprints, actions, insights, loading, refreshData } = useData();
 
+  // Refresh data when dashboard is mounted
   useEffect(() => {
-    if (user) {
-      loadDashboardData();
-    }
-  }, [user]);
+    refreshData();
+  }, [refreshData]);
 
-  const loadDashboardData = async () => {
-    try {
-      setLoading(true);
-      
-      // Load latest carbon footprint
-      const footprintQuery = query(
-        collection(db, 'carbonFootprints'),
-        where('userId', '==', user?.uid),
-        orderBy('date', 'desc'),
-        limit(1)
-      );
-      const footprintSnapshot = await getDocs(footprintQuery);
-      if (!footprintSnapshot.empty) {
-        const data = footprintSnapshot.docs[0].data();
-        setFootprint({
-          id: footprintSnapshot.docs[0].id,
-          ...data,
-          date: data.date.toDate(),
-        } as CarbonFootprint);
-      }
-
-      // Load actions
-      const actionsQuery = query(
-        collection(db, 'ecoActions'),
-        where('userId', '==', user?.uid),
-        orderBy('date', 'desc'),
-        limit(10)
-      );
-      const actionsSnapshot = await getDocs(actionsQuery);
-      const actionsData = actionsSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        date: doc.data().date.toDate(),
-      })) as EcoAction[];
-      setActions(actionsData);
-
-      // Load insights
-      const insightsQuery = query(
-        collection(db, 'carbonInsights'),
-        where('userId', '==', user?.uid),
-        orderBy('date', 'desc'),
-        limit(1)
-      );
-      const insightsSnapshot = await getDocs(insightsQuery);
-      if (!insightsSnapshot.empty) {
-        const data = insightsSnapshot.docs[0].data();
-        setInsights({
-          id: insightsSnapshot.docs[0].id,
-          ...data,
-          date: data.date.toDate(),
-        } as CarbonInsight);
-      }
-
-      // Load monthly data for charts
-      const monthlyQuery = query(
-        collection(db, 'carbonFootprints'),
-        where('userId', '==', user?.uid),
-        orderBy('date', 'desc'),
-        limit(12)
-      );
-      const monthlySnapshot = await getDocs(monthlyQuery);
-      const monthlyData = monthlySnapshot.docs.map(doc => ({
-        ...doc.data(),
-        date: doc.data().date.toDate(),
-      }));
-      setMonthlyData(monthlyData);
-
-    } catch (error) {
-      console.error('Error loading dashboard data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
-    return <LoadingSpinner fullScreen />;
+  // Show empty state if no data
+  if (!loading && !latestFootprint) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
+        
+        <div className="card text-center py-16">
+          <Leaf className="w-20 h-20 text-gray-600 mx-auto mb-6" />
+          <h2 className="text-2xl font-bold mb-4">Welcome to CarbonVault!</h2>
+          <p className="text-gray-400 mb-8 max-w-md mx-auto">
+            Start tracking your carbon footprint by calculating your first emissions data.
+          </p>
+          <Link to="/calculator">
+            <button className="btn-primary inline-flex items-center gap-2 px-6 py-3 bg-primary-500 hover:bg-primary-600 rounded-lg font-semibold transition-colors">
+              <TrendingUp className="w-5 h-5" />
+              Calculate Your Footprint
+            </button>
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold">Dashboard</h1>
+        <Button onClick={refreshData} variant="secondary" disabled={loading}>
+          <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+          Refresh
+        </Button>
+      </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         <div className="lg:col-span-2">
-          {footprint && <CarbonScore footprint={footprint} />}
+          {latestFootprint && <CarbonScore footprint={latestFootprint} />}
         </div>
         <div>
           {insights && <Insights insights={insights} />}
@@ -115,11 +59,13 @@ const DashboardPage: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <Charts monthlyData={monthlyData} footprint={footprint} />
-        <ActionTracker actions={actions} onActionAdded={loadDashboardData} />
+        <Charts monthlyData={footprints} footprint={latestFootprint} />
+        <ActionTracker actions={actions} onActionAdded={refreshData} />
       </div>
     </div>
   );
 };
 
 export default DashboardPage;
+
+// Made with Bob
