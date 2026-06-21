@@ -4,6 +4,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { DataProvider } from './contexts/DataContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { Layout } from './components/layout/Layout';
 import { LoadingSpinner } from './components/common/LoadingSpinner';
@@ -22,7 +23,13 @@ function App() {
     <ErrorBoundary>
       <ThemeProvider>
         <AuthProvider>
-          <BrowserRouter>
+          <DataProvider>
+            <BrowserRouter
+            future={{
+              v7_startTransition: true,
+              v7_relativeSplatPath: true,
+            }}
+          >
             <Suspense fallback={<LoadingSpinner fullScreen />}>
               <Routes>
                 <Route path="/" element={<Layout />}>
@@ -64,7 +71,8 @@ function App() {
                 </Route>
               </Routes>
             </Suspense>
-          </BrowserRouter>
+            </BrowserRouter>
+          </DataProvider>
           <ToastContainer
             position="bottom-right"
             autoClose={5000}

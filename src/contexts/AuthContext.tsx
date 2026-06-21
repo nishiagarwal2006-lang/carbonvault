@@ -62,9 +62,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setError(null);
       await signInWithEmailAndPassword(auth, email, password);
-    } catch (err) {
-      setError('Failed to login. Please check your credentials.');
-      throw err;
+    } catch (err: any) {
+      let errorMessage = 'Failed to login. Please check your credentials.';
+      
+      // Handle specific Firebase error codes
+      if (err.code === 'auth/user-not-found') {
+        errorMessage = 'No account found with this email. Please sign up first.';
+      } else if (err.code === 'auth/wrong-password') {
+        errorMessage = 'Incorrect password. Please try again.';
+      } else if (err.code === 'auth/invalid-email') {
+        errorMessage = 'Invalid email address format.';
+      } else if (err.code === 'auth/user-disabled') {
+        errorMessage = 'This account has been disabled. Please contact support.';
+      } else if (err.code === 'auth/too-many-requests') {
+        errorMessage = 'Too many failed attempts. Please try again later.';
+      } else if (err.code === 'auth/network-request-failed') {
+        errorMessage = 'Network error. Please check your internet connection.';
+      }
+      
+      setError(errorMessage);
+      throw new Error(errorMessage);
     }
   };
 
@@ -72,9 +89,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setError(null);
       await createUserWithEmailAndPassword(auth, email, password);
-    } catch (err) {
-      setError('Failed to register. Please try again.');
-      throw err;
+    } catch (err: any) {
+      let errorMessage = 'Failed to register. Please try again.';
+      
+      // Handle specific Firebase error codes
+      if (err.code === 'auth/email-already-in-use') {
+        errorMessage = 'This email is already registered. Please sign in instead.';
+      } else if (err.code === 'auth/invalid-email') {
+        errorMessage = 'Invalid email address format.';
+      } else if (err.code === 'auth/weak-password') {
+        errorMessage = 'Password is too weak. Please use at least 6 characters.';
+      } else if (err.code === 'auth/operation-not-allowed') {
+        errorMessage = 'Email/password authentication is not enabled. Please contact support.';
+      } else if (err.code === 'auth/network-request-failed') {
+        errorMessage = 'Network error. Please check your internet connection.';
+      }
+      
+      setError(errorMessage);
+      throw new Error(errorMessage);
     }
   };
 

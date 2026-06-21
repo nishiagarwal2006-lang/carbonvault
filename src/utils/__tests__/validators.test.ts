@@ -59,7 +59,7 @@ describe('Validators', () => {
 
       const errors = validateCalculatorInputs(invalidInputs);
       expect(errors.some(e => e.field === 'diet')).toBe(true);
-      expect(errors.some(e => e.message.includes('total meals'))).toBe(true);
+      expect(errors.some(e => e.message.includes('Total meals'))).toBe(true);
     });
 
     test('validates all fields with zero values', () => {
@@ -76,7 +76,9 @@ describe('Validators', () => {
       };
 
       const errors = validateCalculatorInputs(zeroInputs);
-      expect(errors).toHaveLength(0);
+      expect(errors).toHaveLength(1);
+      expect(errors[0].field).toBe('general');
+      expect(errors[0].message).toContain('at least one value');
     });
 
     test('validates maximum values', () => {
@@ -373,7 +375,7 @@ describe('Validators', () => {
       expect(electricityError?.message).toContain('positive');
       
       const dietError = errors.find(e => e.field === 'diet');
-      expect(dietError?.message).toContain('total meals');
+      expect(dietError?.message).toContain('Total meals');
     });
 
     test('error messages include field names for context', () => {

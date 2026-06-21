@@ -4,6 +4,8 @@ import { BrowserRouter } from 'react-router-dom';
 import DashboardPage from '../../src/pages/DashboardPage';
 import { AuthProvider } from '../../src/contexts/AuthContext';
 import { ThemeProvider } from '../../src/contexts/ThemeContext';
+import { DataProvider } from '../../src/contexts/DataContext';
+import { getDocs } from 'firebase/firestore';
 
 // Mock Firebase
 jest.mock('../../src/lib/firebase', () => ({
@@ -17,29 +19,47 @@ jest.mock('../../src/lib/firebase', () => ({
   },
 }));
 
+// Mock Firestore getDocs to return empty results
+jest.mock('firebase/firestore', () => ({
+  ...jest.requireActual('firebase/firestore'),
+  getDocs: jest.fn().mockResolvedValue({
+    empty: true,
+    docs: [],
+  }),
+}));
+
 describe('Dashboard Integration Tests', () => {
   const renderDashboard = () => {
     return render(
       <BrowserRouter>
         <ThemeProvider>
           <AuthProvider>
-            <DashboardPage />
+            <DataProvider>
+              <DashboardPage />
+            </DataProvider>
           </AuthProvider>
         </ThemeProvider>
       </BrowserRouter>
     );
   };
 
-  test('renders dashboard with loading state', () => {
+  test('renders dashboard with empty state when no user', () => {
     renderDashboard();
-    expect(screen.getByRole('status')).toBeInTheDocument();
+    // Dashboard shows empty state when there's no data
+    expect(screen.getByText('Welcome to CarbonVault!')).toBeInTheDocument();
   });
 
-  test('displays dashboard content after loading', async () => {
+  test('displays call to action when no data', async () => {
     renderDashboard();
-    await waitFor(() => {
-      expect(screen.queryByRole('status')).not.toBeInTheDocument();
-    });
-    expect(screen.getByText('Dashboard')).toBeInTheDocument();
+    
+    // Since there's no user/data, the dashboard should show empty state
+    await waitFor(
+      () => {
+        expect(screen.getByText('Calculate Your Footprint')).toBeInTheDocument();
+      },
+      {
+        timeout: 1000,
+      }
+    );
   });
 });

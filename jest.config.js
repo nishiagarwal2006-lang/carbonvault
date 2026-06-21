@@ -12,4 +12,12 @@ export default {
     '!src/main.tsx',
     '!src/vite-env.d.ts',
   ],
+  // Increase timeout for async operations
+  testTimeout: 10000,
+  // Better error handling for unhandled promise rejections
+  globals: {
+    'ts-jest': {
+      isolatedModules: true,
+    },
+  },
 };

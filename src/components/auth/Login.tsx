@@ -22,9 +22,10 @@ const Login: React.FC = () => {
       await login(email, password);
       toast.success('Welcome back!');
       navigate('/dashboard');
-    } catch (err) {
-      setError('Invalid email or password. Please try again.');
-      toast.error('Login failed');
+    } catch (err: any) {
+      const errorMessage = err.message || 'Invalid email or password. Please try again.';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -38,9 +39,10 @@ const Login: React.FC = () => {
       await loginWithGoogle();
       toast.success('Welcome back!');
       navigate('/dashboard');
-    } catch (err) {
-      setError('Google login failed. Please try again.');
-      toast.error('Google login failed');
+    } catch (err: any) {
+      const errorMessage = err.message || 'Google login failed. Please try again.';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

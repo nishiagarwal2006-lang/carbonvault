@@ -26,6 +26,15 @@ export function validateCalculatorInputs(inputs: CalculatorInputs): ValidationEr
     }
   });
 
+  // Check if all values are zero
+  const allZero = Object.values(inputs).every(value => value === 0);
+  if (allZero) {
+    errors.push({
+      field: 'general',
+      message: 'Please enter at least one value to calculate your carbon footprint',
+    });
+  }
+
   // Specific validations
   if (inputs.meatConsumption + inputs.vegetarianMeals > 21) {
     errors.push({
@@ -38,7 +47,33 @@ export function validateCalculatorInputs(inputs: CalculatorInputs): ValidationEr
 }
 
 export function validateEmail(email: string): boolean {
+  // Basic email validation that allows short domains like a@b.c
+  // but rejects consecutive dots and other invalid patterns
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  
+  // Additional checks
+  if (email.includes('..')) {
+    return false;
+  }
+  
+  // Check for dots at start or end of local/domain parts
+  if (email.startsWith('.') || email.endsWith('.')) {
+    return false;
+  }
+  
+  const [local, domain] = email.split('@');
+  if (!local || !domain) {
+    return false;
+  }
+  
+  if (local.startsWith('.') || local.endsWith('.')) {
+    return false;
+  }
+  
+  if (domain.startsWith('.') || domain.endsWith('.')) {
+    return false;
+  }
+  
   return emailRegex.test(email);
 }
 
