@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom';
 import { configure } from '@testing-library/react';
-import axe from 'axe-core';
 
 // Configure testing library
 configure({ testIdAttribute: 'data-testid' });
@@ -34,7 +33,7 @@ jest.mock('../src/lib/firebase', () => ({
 // Mock Firebase Auth functions
 jest.mock('firebase/auth', () => ({
   getAuth: jest.fn(),
-  onAuthStateChanged: jest.fn((auth, callback) => {
+  onAuthStateChanged: jest.fn((_auth, callback) => {
     // Call callback synchronously with null user to simulate no logged-in user
     // This ensures the loading state resolves immediately in tests
     callback(null);

@@ -1,12 +1,11 @@
-import { 
-  calculateCarbonFootprint, 
-  getCarbonScore, 
+import {
+  calculateCarbonFootprint,
+  getCarbonScore,
   getEmissionCategory,
   formatNumber,
   getMonthLabels,
-  debounce 
+  debounce
 } from '../helpers';
-import { EMISSION_FACTORS } from '../constants';
 
 describe('Helpers', () => {
   test('calculateCarbonFootprint calculates correctly', () => {
