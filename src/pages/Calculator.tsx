@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { useData } from '../contexts/DataContext';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/common/Button';
 import { calculateCarbonFootprint, getCarbonScore, getEmissionCategory } from '../utils/helpers';
 import { validateCalculatorInputs } from '../utils/validators';
+import { sanitizeNumber } from '../utils/security';
 import { CalculatorInputs, ValidationError } from '../types';
 import { db } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
@@ -61,18 +61,24 @@ const Calculator: React.FC = () => {
     localStorage.setItem(RESULTS_KEY, JSON.stringify({ show: showResults, data: results }));
   }, [showResults, results]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Debounced input handler for better performance
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    const numValue = parseFloat(value) || 0;
+    
+    // Sanitize numeric input with reasonable bounds
+    const sanitized = sanitizeNumber(value, 0, 1000000);
+    const numValue = sanitized !== null ? sanitized : 0;
+    
     setInputs(prev => ({
       ...prev,
       [name]: numValue
     }));
     setErrors(prev => prev.filter(err => err.field !== name));
-    setShowResults(false); // Hide results when inputs change
-  };
+    setShowResults(false);
+  }, []);
 
-  const handleCalculate = () => {
+  // Memoized calculation handler
+  const handleCalculate = useCallback(() => {
     // Validate inputs
     const validationErrors = validateCalculatorInputs(inputs);
     if (validationErrors.length > 0) {
@@ -93,9 +99,10 @@ const Calculator: React.FC = () => {
     });
     setShowResults(true);
     toast.success('Carbon footprint calculated!');
-  };
+  }, [inputs]);
 
-  const handleSave = async () => {
+  // Memoized save handler
+  const handleSave = useCallback(async () => {
     if (!results) return;
     
     setSaving(true);
@@ -149,7 +156,7 @@ const Calculator: React.FC = () => {
       setSaving(false);
       toast.error('Failed to save. Please try again.');
     }
-  };
+  }, [results, user, navigate]);
 
   const resetForm = () => {
     setInputs({

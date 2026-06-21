@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useMemo } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -12,7 +12,7 @@ import {
   ArcElement,
   Filler,
 } from 'chart.js';
-import { Line, Bar, Doughnut } from 'react-chartjs-2';
+import { Line, Doughnut } from 'react-chartjs-2';
 import { CarbonFootprint } from '../../types';
 import { getMonthLabels } from '../../utils/helpers';
 
@@ -34,11 +34,11 @@ interface ChartsProps {
   footprint: CarbonFootprint | null;
 }
 
-export const Charts: React.FC<ChartsProps> = ({ monthlyData, footprint }) => {
-  const months = getMonthLabels(12);
+export const Charts: React.FC<ChartsProps> = memo(({ monthlyData, footprint }) => {
+  const months = useMemo(() => getMonthLabels(12), []);
 
-  // Prepare monthly trend data
-  const trendData = {
+  // Memoize chart data to prevent unnecessary recalculations
+  const trendData = useMemo(() => ({
     labels: months,
     datasets: [
       {
@@ -54,9 +54,9 @@ export const Charts: React.FC<ChartsProps> = ({ monthlyData, footprint }) => {
         pointRadius: 4,
       },
     ],
-  };
+  }), [monthlyData, months]);
 
-  const trendOptions = {
+  const trendOptions = useMemo(() => ({
     responsive: true,
     plugins: {
       legend: {
@@ -82,10 +82,10 @@ export const Charts: React.FC<ChartsProps> = ({ monthlyData, footprint }) => {
         ticks: { color: '#9CA3AF' },
       },
     },
-  };
+  }), []);
 
-  // Category breakdown data
-  const categoryData = footprint ? {
+  // Memoize category data
+  const categoryData = useMemo(() => footprint ? {
     labels: ['Energy', 'Travel', 'Diet'],
     datasets: [
       {
@@ -102,9 +102,9 @@ export const Charts: React.FC<ChartsProps> = ({ monthlyData, footprint }) => {
   } : {
     labels: ['Energy', 'Travel', 'Diet'],
     datasets: [{ data: [0, 0, 0], backgroundColor: ['#10B981', '#34D399', '#6EE7B7'] }],
-  };
+  }, [footprint]);
 
-  const categoryOptions = {
+  const categoryOptions = useMemo(() => ({
     responsive: true,
     plugins: {
       legend: {
@@ -122,7 +122,7 @@ export const Charts: React.FC<ChartsProps> = ({ monthlyData, footprint }) => {
         font: { size: 16, weight: 'bold' as const },
       },
     },
-  };
+  }), []);
 
   return (
     <div className="card">
@@ -141,4 +141,6 @@ export const Charts: React.FC<ChartsProps> = ({ monthlyData, footprint }) => {
       </div>
     </div>
   );
-};
+});
+
+Charts.displayName = 'Charts';

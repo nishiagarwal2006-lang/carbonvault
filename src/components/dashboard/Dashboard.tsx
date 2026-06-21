@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo, useCallback, memo } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useCarbonData } from '../../hooks/useCarbonData';
 import { CarbonScore } from './CarbonScore';
@@ -7,11 +7,11 @@ import { ActionTracker } from './ActionTracker';
 import { Insights } from './Insights';
 import { LoadingSpinner } from '../common/LoadingSpinner';
 import { Card } from '../common/Card';
-import { 
-  TrendingUp, 
-  Award, 
-  Leaf, 
-  Calendar, 
+import {
+  TrendingUp,
+  Award,
+  Leaf,
+  Calendar,
   ChevronRight,
   BarChart3,
   PieChart,
@@ -28,26 +28,30 @@ interface DashboardProps {
   onActionAdded?: () => void;
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ onActionAdded }) => {
+export const Dashboard: React.FC<DashboardProps> = memo(({ onActionAdded }) => {
   const { user } = useAuth();
-  const { 
-    loading, 
-    footprint, 
-    actions, 
-    insights, 
-    monthlyData, 
-    refetch 
+  const {
+    loading,
+    footprint,
+    actions,
+    insights,
+    monthlyData,
+    refetch
   } = useCarbonData();
   
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'year'>('month');
   const [showAllActions, setShowAllActions] = useState(false);
 
-  // Calculate stats
-  const totalPoints = actions.reduce((sum, action) => sum + (action.points || 0), 0);
-  const totalCarbonSaved = actions.reduce((sum, action) => sum + (action.carbonSaved || 0), 0);
-  const completedActions = actions.filter(a => a.completed).length;
-  const carbonScore = footprint ? getCarbonScore(footprint.totalEmissions) : 0;
-  const emissionCategory = footprint ? getEmissionCategory(footprint.totalEmissions) : 'medium';
+  // Memoized calculations for performance
+  const stats = useMemo(() => {
+    const totalPoints = actions.reduce((sum, action) => sum + (action.points || 0), 0);
+    const totalCarbonSaved = actions.reduce((sum, action) => sum + (action.carbonSaved || 0), 0);
+    const completedActions = actions.filter(a => a.completed).length;
+    const carbonScore = footprint ? getCarbonScore(footprint.totalEmissions) : 0;
+    const emissionCategory = footprint ? getEmissionCategory(footprint.totalEmissions) : 'medium';
+    
+    return { totalPoints, totalCarbonSaved, completedActions, carbonScore, emissionCategory };
+  }, [actions, footprint]);
 
   const getCategoryColor = (category: string) => {
     switch (category) {
@@ -114,12 +118,12 @@ export const Dashboard: React.FC<DashboardProps> = ({ onActionAdded }) => {
         <Card className="text-center">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-gray-400">Carbon Score</span>
-            <Target className={`w-5 h-5 ${getCategoryColor(emissionCategory)}`} />
+            <Target className={`w-5 h-5 ${getCategoryColor(stats.emissionCategory)}`} />
           </div>
-          <div className="text-3xl font-bold text-primary-500">{carbonScore}</div>
+          <div className="text-3xl font-bold text-primary-500">{stats.carbonScore}</div>
           <div className="text-sm text-gray-400">/ 100</div>
           <div className="mt-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-500/10 text-primary-400">
-            {getCategoryLabel(emissionCategory)}
+            {getCategoryLabel(stats.emissionCategory)}
           </div>
         </Card>
 
@@ -134,10 +138,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ onActionAdded }) => {
           <div className="text-sm text-gray-400">kg CO₂e / year</div>
           {footprint && (
             <div className="mt-2 w-full bg-dark-200 rounded-full h-1.5">
-              <div 
+              <div
                 className="bg-primary-500 h-1.5 rounded-full transition-all duration-500"
-                style={{ 
-                  width: `${Math.min((footprint.totalEmissions / 20000) * 100, 100)}%` 
+                style={{
+                  width: `${Math.min((footprint.totalEmissions / 20000) * 100, 100)}%`
                 }}
               />
             </div>
@@ -149,10 +153,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ onActionAdded }) => {
             <span className="text-sm text-gray-400">Actions Taken</span>
             <Award className="w-5 h-5 text-primary-500" />
           </div>
-          <div className="text-3xl font-bold text-white">{completedActions}</div>
+          <div className="text-3xl font-bold text-white">{stats.completedActions}</div>
           <div className="text-sm text-gray-400">Total Actions</div>
           <div className="mt-2 text-sm text-primary-400">
-            +{totalPoints} points earned
+            +{stats.totalPoints} points earned
           </div>
         </Card>
 
@@ -162,7 +166,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onActionAdded }) => {
             <Leaf className="w-5 h-5 text-primary-500" />
           </div>
           <div className="text-3xl font-bold text-white">
-            {totalCarbonSaved.toFixed(1)}
+            {stats.totalCarbonSaved.toFixed(1)}
           </div>
           <div className="text-sm text-gray-400">kg CO₂e saved</div>
           <div className="mt-2 text-sm text-primary-400">
@@ -317,6 +321,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ onActionAdded }) => {
       </Card>
     </div>
   );
-};
+});
+
+Dashboard.displayName = 'Dashboard';
 
 export default Dashboard;
